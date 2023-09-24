@@ -13,29 +13,16 @@ using PVIGEM_CLIENT = IntPtr;
 [SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
 public sealed partial class ViGEmClient : IDisposable
 {
-    [SuppressMessage("ReSharper", "SwitchStatementMissingSomeEnumCasesNoDefault")]
     public ViGEmClient()
     {
         NativeHandle = vigem_alloc();
-
         if (NativeHandle == IntPtr.Zero)
         {
             throw new VigemAllocFailedException();
         }
 
         VIGEM_ERROR error = vigem_connect(NativeHandle);
-
-        switch (error)
-        {
-            case VIGEM_ERROR.VIGEM_ERROR_ALREADY_CONNECTED:
-                throw new VigemAlreadyConnectedException();
-            case VIGEM_ERROR.VIGEM_ERROR_BUS_NOT_FOUND:
-                throw new VigemBusNotFoundException();
-            case VIGEM_ERROR.VIGEM_ERROR_BUS_ACCESS_FAILED:
-                throw new VigemBusAccessFailedException();
-            case VIGEM_ERROR.VIGEM_ERROR_BUS_VERSION_MISMATCH:
-                throw new VigemBusVersionMismatchException();
-        }
+        CheckError(error);
     }
 
     /// <summary>

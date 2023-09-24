@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Runtime.InteropServices;
 
-using Nefarius.ViGEm.Client.Exceptions;
 using Nefarius.ViGEm.Client.Targets.DualShock4;
 
 namespace Nefarius.ViGEm.Client.Targets;
@@ -100,7 +97,6 @@ internal partial class DualShock4Controller
     }
 
     /// <inheritdoc />
-    [SuppressMessage("ReSharper", "SwitchStatementHandlesSomeKnownEnumValuesWithDefault")]
     public void SubmitRawReport(byte[] buffer)
     {
         if (buffer.Length != Marshal.SizeOf<ViGEmClient.DS4_REPORT_EX>())
@@ -113,85 +109,37 @@ internal partial class DualShock4Controller
         ViGEmClient.VIGEM_ERROR error =
             ViGEmClient.vigem_target_ds4_update_ex(Client.NativeHandle, NativeHandle, _nativeReportEx);
 
-        switch (error)
-        {
-            case ViGEmClient.VIGEM_ERROR.VIGEM_ERROR_NONE:
-                break;
-            case ViGEmClient.VIGEM_ERROR.VIGEM_ERROR_BUS_INVALID_HANDLE:
-                throw new VigemBusInvalidHandleException();
-            case ViGEmClient.VIGEM_ERROR.VIGEM_ERROR_INVALID_TARGET:
-                throw new VigemInvalidTargetException();
-            case ViGEmClient.VIGEM_ERROR.VIGEM_ERROR_BUS_NOT_FOUND:
-                throw new VigemBusNotFoundException();
-            case ViGEmClient.VIGEM_ERROR.VIGEM_ERROR_NOT_SUPPORTED:
-                throw new VigemNotSupportedException();
-            default:
-                throw new Win32Exception(Marshal.GetLastWin32Error());
-        }
+        ViGEmClient.CheckError(error);
     }
 
     /// <inheritdoc />
-    [SuppressMessage("ReSharper", "SwitchStatementHandlesSomeKnownEnumValuesWithDefault")]
     public IEnumerable<byte> AwaitRawOutputReport()
     {
         ViGEmClient.VIGEM_ERROR error = ViGEmClient.vigem_target_ds4_await_output_report(Client.NativeHandle,
             NativeHandle,
             ref _outputBuffer);
 
-        switch (error)
-        {
-            case ViGEmClient.VIGEM_ERROR.VIGEM_ERROR_NONE:
-                break;
-            case ViGEmClient.VIGEM_ERROR.VIGEM_ERROR_BUS_INVALID_HANDLE:
-                throw new VigemBusInvalidHandleException();
-            case ViGEmClient.VIGEM_ERROR.VIGEM_ERROR_INVALID_TARGET:
-                throw new VigemInvalidTargetException();
-            case ViGEmClient.VIGEM_ERROR.VIGEM_ERROR_BUS_NOT_FOUND:
-                throw new VigemBusNotFoundException();
-            case ViGEmClient.VIGEM_ERROR.VIGEM_ERROR_NOT_SUPPORTED:
-                throw new VigemNotSupportedException();
-            case ViGEmClient.VIGEM_ERROR.VIGEM_ERROR_INVALID_PARAMETER:
-                throw new VigemInvalidParameterException();
-            case ViGEmClient.VIGEM_ERROR.VIGEM_ERROR_IS_DISPOSING:
-                throw new VigemIsDisposingException();
-            default:
-                throw new Win32Exception(Marshal.GetLastWin32Error());
-        }
+        ViGEmClient.CheckError(error);
 
         return _outputBuffer.Buffer;
     }
 
     /// <inheritdoc />
-    [SuppressMessage("ReSharper", "SwitchStatementHandlesSomeKnownEnumValuesWithDefault")]
     public IEnumerable<byte> AwaitRawOutputReport(int timeout, out bool timedOut)
     {
         ViGEmClient.VIGEM_ERROR error = ViGEmClient.vigem_target_ds4_await_output_report_timeout(Client.NativeHandle,
             NativeHandle,
             (uint)timeout, ref _outputBuffer);
 
-        switch (error)
+        if (error == ViGEmClient.VIGEM_ERROR.VIGEM_ERROR_TIMED_OUT)
         {
-            case ViGEmClient.VIGEM_ERROR.VIGEM_ERROR_NONE:
-                break;
-            case ViGEmClient.VIGEM_ERROR.VIGEM_ERROR_BUS_INVALID_HANDLE:
-                throw new VigemBusInvalidHandleException();
-            case ViGEmClient.VIGEM_ERROR.VIGEM_ERROR_INVALID_TARGET:
-                throw new VigemInvalidTargetException();
-            case ViGEmClient.VIGEM_ERROR.VIGEM_ERROR_BUS_NOT_FOUND:
-                throw new VigemBusNotFoundException();
-            case ViGEmClient.VIGEM_ERROR.VIGEM_ERROR_NOT_SUPPORTED:
-                throw new VigemNotSupportedException();
-            case ViGEmClient.VIGEM_ERROR.VIGEM_ERROR_INVALID_PARAMETER:
-                throw new VigemInvalidParameterException();
-            case ViGEmClient.VIGEM_ERROR.VIGEM_ERROR_TIMED_OUT:
-                timedOut = true;
-                return Enumerable.Empty<byte>();
-            default:
-                throw new Win32Exception(Marshal.GetLastWin32Error());
+            timedOut = true;
+            return Enumerable.Empty<byte>();
         }
 
-        timedOut = false;
+        ViGEmClient.CheckError(error);
 
+        timedOut = false;
         return _outputBuffer.Buffer;
     }
 }

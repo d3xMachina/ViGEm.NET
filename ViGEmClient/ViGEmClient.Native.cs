@@ -1,7 +1,11 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using System.Security;
+
+using Nefarius.ViGEm.Client.Exceptions;
+
 #pragma warning disable IDE1006
 
 namespace Nefarius.ViGEm.Client;
@@ -167,6 +171,54 @@ public sealed partial class ViGEmClient
         VIGEM_ERROR_WINAPI = 0xE0000017,
         VIGEM_ERROR_TIMED_OUT = 0xE0000018,
         VIGEM_ERROR_IS_DISPOSING = 0xE0000019,
+    }
+
+    internal static void CheckError(VIGEM_ERROR error)
+    {
+        switch (error)
+        {
+            case VIGEM_ERROR.VIGEM_ERROR_NONE:
+                break;
+            case VIGEM_ERROR.VIGEM_ERROR_BUS_NOT_FOUND:
+                throw new VigemBusNotFoundException();
+            case VIGEM_ERROR.VIGEM_ERROR_NO_FREE_SLOT:
+                throw new VigemNoFreeSlotException();
+            case VIGEM_ERROR.VIGEM_ERROR_INVALID_TARGET:
+                throw new VigemInvalidTargetException();
+            case VIGEM_ERROR.VIGEM_ERROR_REMOVAL_FAILED:
+                throw new VigemRemovalFailedException();
+            case VIGEM_ERROR.VIGEM_ERROR_ALREADY_CONNECTED:
+            case VIGEM_ERROR.VIGEM_ERROR_BUS_ALREADY_CONNECTED:
+                throw new VigemAlreadyConnectedException();
+            case VIGEM_ERROR.VIGEM_ERROR_TARGET_UNINITIALIZED:
+                throw new VigemTargetUninitializedException();
+            case VIGEM_ERROR.VIGEM_ERROR_TARGET_NOT_PLUGGED_IN:
+                throw new VigemTargetNotPluggedInException();
+            case VIGEM_ERROR.VIGEM_ERROR_BUS_VERSION_MISMATCH:
+                throw new VigemBusVersionMismatchException();
+            case VIGEM_ERROR.VIGEM_ERROR_BUS_ACCESS_FAILED:
+                throw new VigemBusAccessFailedException();
+            case VIGEM_ERROR.VIGEM_ERROR_CALLBACK_ALREADY_REGISTERED:
+                throw new VigemCallbackAlreadyRegisteredException();
+            case VIGEM_ERROR.VIGEM_ERROR_CALLBACK_NOT_FOUND:
+                throw new VigemCallbackNotFoundException();
+            case VIGEM_ERROR.VIGEM_ERROR_BUS_INVALID_HANDLE:
+                throw new VigemBusInvalidHandleException();
+            case VIGEM_ERROR.VIGEM_ERROR_XUSB_USERINDEX_OUT_OF_RANGE:
+                throw new IndexOutOfRangeException("The XUSB user index received is out of range!");
+            case VIGEM_ERROR.VIGEM_ERROR_INVALID_PARAMETER:
+                throw new VigemInvalidParameterException();
+            case VIGEM_ERROR.VIGEM_ERROR_NOT_SUPPORTED:
+                throw new VigemNotSupportedException();
+            case VIGEM_ERROR.VIGEM_ERROR_TIMED_OUT:
+                throw new TimeoutException();
+            case VIGEM_ERROR.VIGEM_ERROR_IS_DISPOSING:
+                throw new VigemIsDisposingException();
+
+            case VIGEM_ERROR.VIGEM_ERROR_WINAPI:
+            default:
+                throw new Win32Exception(Marshal.GetLastWin32Error());
+        }
     }
 
     [StructLayout(LayoutKind.Sequential)]

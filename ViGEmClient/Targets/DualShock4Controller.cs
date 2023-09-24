@@ -1,8 +1,5 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Diagnostics.CodeAnalysis;
-using System.Runtime.InteropServices;
 
 using Nefarius.ViGEm.Client.Exceptions;
 using Nefarius.ViGEm.Client.Targets.DualShock4;
@@ -95,15 +92,7 @@ internal partial class DualShock4Controller : ViGEmTarget, IDualShock4Controller
             NativeHandle,
             _notificationCallback);
 
-        switch (error)
-        {
-            case ViGEmClient.VIGEM_ERROR.VIGEM_ERROR_BUS_NOT_FOUND:
-                throw new VigemBusNotFoundException();
-            case ViGEmClient.VIGEM_ERROR.VIGEM_ERROR_INVALID_TARGET:
-                throw new VigemInvalidTargetException();
-            case ViGEmClient.VIGEM_ERROR.VIGEM_ERROR_CALLBACK_ALREADY_REGISTERED:
-                throw new VigemCallbackAlreadyRegisteredException();
-        }
+        ViGEmClient.CheckError(error);
     }
 
     public override void Disconnect()
@@ -164,24 +153,10 @@ internal partial class DualShock4Controller : ViGEmTarget, IDualShock4Controller
     [Obsolete("This event might not behave as expected and has been deprecated. Use AwaitRawOutputReport() instead.")]
     public event DualShock4FeedbackReceivedEventHandler FeedbackReceived;
 
-    [SuppressMessage("ReSharper", "SwitchStatementHandlesSomeKnownEnumValuesWithDefault")]
     private void SubmitNativeReport(ViGEmClient.DS4_REPORT report)
     {
         ViGEmClient.VIGEM_ERROR error = ViGEmClient.vigem_target_ds4_update(Client.NativeHandle, NativeHandle, report);
-
-        switch (error)
-        {
-            case ViGEmClient.VIGEM_ERROR.VIGEM_ERROR_NONE:
-                break;
-            case ViGEmClient.VIGEM_ERROR.VIGEM_ERROR_BUS_INVALID_HANDLE:
-                throw new VigemBusInvalidHandleException();
-            case ViGEmClient.VIGEM_ERROR.VIGEM_ERROR_INVALID_TARGET:
-                throw new VigemInvalidTargetException();
-            case ViGEmClient.VIGEM_ERROR.VIGEM_ERROR_BUS_NOT_FOUND:
-                throw new VigemBusNotFoundException();
-            default:
-                throw new Win32Exception(Marshal.GetLastWin32Error());
-        }
+        ViGEmClient.CheckError(error);
     }
 }
 
