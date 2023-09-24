@@ -1,3 +1,4 @@
+﻿using System;
 using System.Collections.Generic;
 
 using Nefarius.ViGEm.Client.Exceptions;
@@ -56,6 +57,10 @@ internal partial class Xbox360Controller : ViGEmTarget, IXbox360Controller
     public Xbox360Controller(ViGEmClient client) : base(client)
     {
         NativeHandle = ViGEmClient.vigem_target_x360_alloc();
+        if (NativeHandle == IntPtr.Zero)
+        {
+            throw new VigemAllocFailedException();
+        }
     }
 
     /// <inheritdoc />

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 
 using Nefarius.ViGEm.Client.Exceptions;
@@ -58,6 +58,10 @@ internal partial class DualShock4Controller : ViGEmTarget, IDualShock4Controller
     public DualShock4Controller(ViGEmClient client) : base(client)
     {
         NativeHandle = ViGEmClient.vigem_target_ds4_alloc();
+        if (NativeHandle == IntPtr.Zero)
+        {
+            throw new VigemAllocFailedException();
+        }
 
         ResetReport();
     }
