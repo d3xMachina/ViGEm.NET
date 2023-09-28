@@ -5,6 +5,7 @@ using System.Runtime.InteropServices;
 using System.Security;
 
 using Nefarius.ViGEm.Client.Exceptions;
+using Nefarius.ViGEm.Client.Targets.Xbox360.Exceptions;
 
 #pragma warning disable IDE1006
 
@@ -205,7 +206,7 @@ public sealed partial class ViGEmClient
             case VIGEM_ERROR.VIGEM_ERROR_BUS_INVALID_HANDLE:
                 throw new VigemBusInvalidHandleException();
             case VIGEM_ERROR.VIGEM_ERROR_XUSB_USERINDEX_OUT_OF_RANGE:
-                throw new IndexOutOfRangeException("The XUSB user index received is out of range!");
+                throw new Xbox360UserIndexOutOfRangeException();
             case VIGEM_ERROR.VIGEM_ERROR_INVALID_PARAMETER:
                 throw new VigemInvalidParameterException();
             case VIGEM_ERROR.VIGEM_ERROR_NOT_SUPPORTED:
