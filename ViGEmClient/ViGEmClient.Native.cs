@@ -176,52 +176,33 @@ public sealed partial class ViGEmClient
 
     internal static void CheckError(VIGEM_ERROR error)
     {
-        switch (error)
+        if (error == VIGEM_ERROR.VIGEM_ERROR_NONE)
+            return;
+
+        throw error switch
         {
-            case VIGEM_ERROR.VIGEM_ERROR_NONE:
-                break;
+            VIGEM_ERROR.VIGEM_ERROR_BUS_NOT_FOUND               => new VigemBusNotFoundException(),
+            VIGEM_ERROR.VIGEM_ERROR_NO_FREE_SLOT                => new VigemNoFreeSlotException(),
+            VIGEM_ERROR.VIGEM_ERROR_INVALID_TARGET              => new VigemInvalidTargetException(),
+            VIGEM_ERROR.VIGEM_ERROR_REMOVAL_FAILED              => new VigemRemovalFailedException(),
+            VIGEM_ERROR.VIGEM_ERROR_ALREADY_CONNECTED or
+            VIGEM_ERROR.VIGEM_ERROR_BUS_ALREADY_CONNECTED       => new VigemAlreadyConnectedException(),
+            VIGEM_ERROR.VIGEM_ERROR_TARGET_UNINITIALIZED        => new VigemTargetUninitializedException(),
+            VIGEM_ERROR.VIGEM_ERROR_TARGET_NOT_PLUGGED_IN       => new VigemTargetNotPluggedInException(),
+            VIGEM_ERROR.VIGEM_ERROR_BUS_VERSION_MISMATCH        => new VigemBusVersionMismatchException(),
+            VIGEM_ERROR.VIGEM_ERROR_BUS_ACCESS_FAILED           => new VigemBusAccessFailedException(),
+            VIGEM_ERROR.VIGEM_ERROR_CALLBACK_ALREADY_REGISTERED => new VigemCallbackAlreadyRegisteredException(),
+            VIGEM_ERROR.VIGEM_ERROR_CALLBACK_NOT_FOUND          => new VigemCallbackNotFoundException(),
+            VIGEM_ERROR.VIGEM_ERROR_BUS_INVALID_HANDLE          => new VigemBusInvalidHandleException(),
+            VIGEM_ERROR.VIGEM_ERROR_XUSB_USERINDEX_OUT_OF_RANGE => new Xbox360UserIndexOutOfRangeException(),
+            VIGEM_ERROR.VIGEM_ERROR_INVALID_PARAMETER           => new VigemInvalidParameterException(),
+            VIGEM_ERROR.VIGEM_ERROR_NOT_SUPPORTED               => new VigemNotSupportedException(),
+            VIGEM_ERROR.VIGEM_ERROR_TIMED_OUT                   => new TimeoutException(),
+            VIGEM_ERROR.VIGEM_ERROR_IS_DISPOSING                => new VigemIsDisposingException(),
+            VIGEM_ERROR.VIGEM_ERROR_WINAPI                      => new Win32Exception(Marshal.GetLastWin32Error()),
 
-            case VIGEM_ERROR.VIGEM_ERROR_BUS_NOT_FOUND:
-                throw new VigemBusNotFoundException();
-            case VIGEM_ERROR.VIGEM_ERROR_NO_FREE_SLOT:
-                throw new VigemNoFreeSlotException();
-            case VIGEM_ERROR.VIGEM_ERROR_INVALID_TARGET:
-                throw new VigemInvalidTargetException();
-            case VIGEM_ERROR.VIGEM_ERROR_REMOVAL_FAILED:
-                throw new VigemRemovalFailedException();
-            case VIGEM_ERROR.VIGEM_ERROR_ALREADY_CONNECTED:
-            case VIGEM_ERROR.VIGEM_ERROR_BUS_ALREADY_CONNECTED:
-                throw new VigemAlreadyConnectedException();
-            case VIGEM_ERROR.VIGEM_ERROR_TARGET_UNINITIALIZED:
-                throw new VigemTargetUninitializedException();
-            case VIGEM_ERROR.VIGEM_ERROR_TARGET_NOT_PLUGGED_IN:
-                throw new VigemTargetNotPluggedInException();
-            case VIGEM_ERROR.VIGEM_ERROR_BUS_VERSION_MISMATCH:
-                throw new VigemBusVersionMismatchException();
-            case VIGEM_ERROR.VIGEM_ERROR_BUS_ACCESS_FAILED:
-                throw new VigemBusAccessFailedException();
-            case VIGEM_ERROR.VIGEM_ERROR_CALLBACK_ALREADY_REGISTERED:
-                throw new VigemCallbackAlreadyRegisteredException();
-            case VIGEM_ERROR.VIGEM_ERROR_CALLBACK_NOT_FOUND:
-                throw new VigemCallbackNotFoundException();
-            case VIGEM_ERROR.VIGEM_ERROR_BUS_INVALID_HANDLE:
-                throw new VigemBusInvalidHandleException();
-            case VIGEM_ERROR.VIGEM_ERROR_XUSB_USERINDEX_OUT_OF_RANGE:
-                throw new Xbox360UserIndexOutOfRangeException();
-            case VIGEM_ERROR.VIGEM_ERROR_INVALID_PARAMETER:
-                throw new VigemInvalidParameterException();
-            case VIGEM_ERROR.VIGEM_ERROR_NOT_SUPPORTED:
-                throw new VigemNotSupportedException();
-            case VIGEM_ERROR.VIGEM_ERROR_TIMED_OUT:
-                throw new TimeoutException();
-            case VIGEM_ERROR.VIGEM_ERROR_IS_DISPOSING:
-                throw new VigemIsDisposingException();
-            case VIGEM_ERROR.VIGEM_ERROR_WINAPI:
-                throw new Win32Exception(Marshal.GetLastWin32Error());
-
-            default:
-                throw new VigemUnknownException($"Unhandled error code {error}. Last Win32 error: {Marshal.GetLastWin32Error()}");
-        }
+            _ => new VigemUnknownException($"Unhandled error code {error}. (Last Win32 error: {Marshal.GetLastWin32Error()})"),
+        };
     }
 
     [StructLayout(LayoutKind.Sequential)]
