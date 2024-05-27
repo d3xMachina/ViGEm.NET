@@ -180,6 +180,7 @@ public sealed partial class ViGEmClient
         {
             case VIGEM_ERROR.VIGEM_ERROR_NONE:
                 break;
+
             case VIGEM_ERROR.VIGEM_ERROR_BUS_NOT_FOUND:
                 throw new VigemBusNotFoundException();
             case VIGEM_ERROR.VIGEM_ERROR_NO_FREE_SLOT:
@@ -215,10 +216,11 @@ public sealed partial class ViGEmClient
                 throw new TimeoutException();
             case VIGEM_ERROR.VIGEM_ERROR_IS_DISPOSING:
                 throw new VigemIsDisposingException();
-
             case VIGEM_ERROR.VIGEM_ERROR_WINAPI:
-            default:
                 throw new Win32Exception(Marshal.GetLastWin32Error());
+
+            default:
+                throw new VigemUnknownException($"Unhandled error code {error}. Last Win32 error: {Marshal.GetLastWin32Error()}");
         }
     }
 
