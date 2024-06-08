@@ -29,6 +29,9 @@
     <RepositoryUrl>https://github.com/ViGEm/ViGEm.NET</RepositoryUrl>
     <PackageIcon>ViGEm_Icon.png</PackageIcon>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <AssemblyVersion></AssemblyVersion>
+    <FileVersion></FileVersion>
+    <Version>2.0.0</Version>
   </PropertyGroup>
 
   <ItemGroup>
