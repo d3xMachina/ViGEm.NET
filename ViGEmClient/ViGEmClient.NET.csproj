@@ -7,7 +7,7 @@
   <PropertyGroup>
     <ProjectGuid>{AA18EBCF-7E9D-4BC5-8760-E8C6E9A773E5}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <OutputPath>$(SolutionDir)bin\</OutputPath>
+    <OutputPath>$(ProjectDir)..\bin\</OutputPath>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Nefarius.ViGEm.Client</RootNamespace>
     <AssemblyName>Nefarius.ViGEm.Client</AssemblyName>
@@ -32,6 +32,8 @@
     <AssemblyVersion></AssemblyVersion>
     <FileVersion></FileVersion>
     <Version>2.0.0</Version>
+    <BaseOutputPath></BaseOutputPath>
+    <PackageOutputPath>$(OutputPath)</PackageOutputPath>
   </PropertyGroup>
 
   <ItemGroup>
