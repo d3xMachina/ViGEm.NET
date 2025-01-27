@@ -10,7 +10,6 @@
 /.tmp
 /build/bin
 *.DotSettings
-*.dll
 # Build results
 [Dd]ebug/
 [Dd]ebugPublic/
