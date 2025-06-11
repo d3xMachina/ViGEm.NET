@@ -37,7 +37,6 @@
     <PackageOutputPath>$(OutputPath)</PackageOutputPath>
   </PropertyGroup>
   <ItemGroup>
-    <None Remove="costura-win-x86\ViGEmClient.dll" />
     <None Remove="costura-win-x64\ViGEmClient.dll" />
     <None Include="..\ViGEm_Icon.png">
       <Pack>True</Pack>
@@ -47,8 +46,14 @@
   </ItemGroup>
   <!-- Embedded files -->
   <ItemGroup>
-    <EmbeddedResource Include="costura-win-x86\ViGEmClient.dll" />
-    <EmbeddedResource Include="costura-win-x64\ViGEmClient.dll" />
+    <EmbeddedResource Include="..\ViGEmClientNative\bin\release\x86\ViGEmClient.dll">
+        <Link>costura-win-x86\%(Filename)%(Extension)</Link>
+        <Visible>false</Visible>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\ViGEmClientNative\bin\release\x64\ViGEmClient.dll">
+        <Link>costura-win-x64\%(Filename)%(Extension)</Link>
+        <Visible>false</Visible>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <None Include="FodyWeavers.xml" />

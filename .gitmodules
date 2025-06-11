@@ -1,0 +1,3 @@
+[submodule "ViGEmClient"]
+	path = ViGEmClientNative
+	url = https://github.com/d3xMachina/ViGEmClient
